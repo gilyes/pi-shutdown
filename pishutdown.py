@@ -3,6 +3,7 @@
 import RPi.GPIO as GPIO
 from subprocess import call
 from datetime import datetime
+import time
 
 # pushbutton connected to this GPIO pin, using pin 5 also has the benefit of
 # waking / powering up Raspberry Pi when button is pressed
@@ -38,4 +39,5 @@ def buttonStateChanged(pin):
 GPIO.add_event_detect(shutdownPin, GPIO.BOTH, callback=buttonStateChanged)
 
 while True:
-    pass
+    # sleep to reduce unnecessary CPU usage
+    time.sleep(5)
