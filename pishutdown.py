@@ -9,8 +9,8 @@ import time
 # waking / powering up Raspberry Pi when button is pressed
 shutdownPin = 5
 
-# if button pressed for at least this long then reboot. if less then shut down.
-rebootMinSeconds = 3
+# if button pressed for at least this long then shut down. if less then reboot.
+shutdownMinSeconds = 3
 
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(shutdownPin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
@@ -27,12 +27,12 @@ def buttonStateChanged(pin):
     else:
         # button is up
         if buttonPressedTime is not None:
-            if (datetime.now() - buttonPressedTime).total_seconds() >= rebootMinSeconds:
-                # button pressed for more than specified time, reboot
-                call(['shutdown', '-r', 'now'], shell=False)
-            else:
-                # button pressed for a shorter time, halt
+            if (datetime.now() - buttonPressedTime).total_seconds() >= shutdownMinSeconds:
+                # button pressed for more than specified time, shutdown
                 call(['shutdown', '-h', 'now'], shell=False)
+            else:
+                # button pressed for a shorter time, reboot
+                call(['shutdown', '-r', 'now'], shell=False)
 
 
 # subscribe to button presses
