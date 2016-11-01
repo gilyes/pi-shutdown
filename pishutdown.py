@@ -1,3 +1,4 @@
+#!/usr/bin/python
 # shutdown/reboot(/power on) Raspberry Pi with pushbutton
 
 import RPi.GPIO as GPIO
