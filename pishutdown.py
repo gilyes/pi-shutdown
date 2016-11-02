@@ -1,3 +1,4 @@
+#!/usr/bin/python
 # shutdown/reboot(/power on) Raspberry Pi with pushbutton
 
 import RPi.GPIO as GPIO
@@ -12,6 +13,9 @@ shutdownPin = 5
 # if button pressed for at least this long then shut down. if less then reboot.
 shutdownMinSeconds = 3
 
+# button debounce time in seconds
+debounceSeconds = 0.01
+
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(shutdownPin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
@@ -23,14 +27,17 @@ def buttonStateChanged(pin):
 
     if not (GPIO.input(pin)):
         # button is down
-        buttonPressedTime = datetime.now()
+        if buttonPressedTime is None:
+            buttonPressedTime = datetime.now()
     else:
         # button is up
         if buttonPressedTime is not None:
-            if (datetime.now() - buttonPressedTime).total_seconds() >= shutdownMinSeconds:
+            elapsed = (datetime.now() - buttonPressedTime).total_seconds()
+            buttonPressedTime = None
+            if elapsed >= shutdownMinSeconds:
                 # button pressed for more than specified time, shutdown
                 call(['shutdown', '-h', 'now'], shell=False)
-            else:
+            elif elapsed >= debounceSeconds:
                 # button pressed for a shorter time, reboot
                 call(['shutdown', '-r', 'now'], shell=False)
 
